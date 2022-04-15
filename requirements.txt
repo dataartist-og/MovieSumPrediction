@@ -1,0 +1,13 @@
+tensorflow
+transformers
+numpy
+scipy
+scikit-learn
+pandas
+matplotlib
+sentence-transformers
+json
+seaborn
+nltk
+tqdm
+pickle
