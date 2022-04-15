@@ -5,6 +5,10 @@ import os
 import tensorflow as tf
 from sentence_transformers import SentenceTransformer
 from scipy import spatial
+import pandas as pd
+import numpy as np
+import datetime
+
 import tensorflow as tf
 from transformers import TFBertPreTrainedModel, TFBertMainLayer, TFBertModel
 from transformers import BertTokenizer
@@ -57,10 +61,13 @@ if __name__=='__main__':
     multi_label_model = TFBertForMultilabelClassification.from_pretrained('dataartist/movie_genre_bert')
     embedding_model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
     train = pd.read_csv('./data/movie_short.csv')
-
-    print("Calculating Embeddings...")
-    embedding = embedding_model.encode(train['plot'].values,normalize_embeddings=True, show_progress_bar=True)
-
+    if 'embedding' in train.columns:
+        embedding = train.embedding.tolist()
+    else:
+        print("Calculating Embeddings...")
+        embedding = embedding_model.encode(train['plot'].values,normalize_embeddings=True, show_progress_bar=True)
+        train['embedding'] = [i for i in embedding]
+        train.to_csv('./data/movie_short.csv')
     print ("Generating Genre Predictions using fine-tuned BERT Transformer...")
     plot_example_tok = tokenizer(plot_example, return_tensors="tf")
     genre_classification_logits = multi_label_model(plot_example_tok)
